@@ -59,7 +59,7 @@ class NativeCacheStore implements Cacheable
 
     public function set(string $key, $value)
     {
-        $this->keyCallables[$key] = static function (CacheItemInterface $item) use ($value) {
+        $this->keyCallables[$key] = function (CacheItemInterface $item) use ($value) {
             $item->expiresAfter($this->ttl);
 
             return $value;
@@ -76,6 +76,7 @@ class NativeCacheStore implements Cacheable
 
     /**
      * @throws InvalidArgumentException
+     * @param array<string> $keys
      */
     public function deleteAll(array $keys): bool
     {
@@ -100,6 +101,9 @@ class NativeCacheStore implements Cacheable
         return $this;
     }
 
+    /**
+     * @return array<string>
+     */
     public function keys(): array
     {
         return array_keys($this->keyCallables);
