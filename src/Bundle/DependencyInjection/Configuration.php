@@ -36,8 +36,10 @@ class Configuration implements ConfigurationInterface
                 return 1 !== count($enabledCacheConfigs);
             })
             ->thenInvalid('You can only specify one of the available cache configurations.')
-            ->end()
-            ->children();
+            ->end();
+
+        /** @var ArrayNodeDefinition $cacheConfig */
+        $cacheConfigChildren = $cacheConfig->children();
 
         $children->integerNode('cache_ttl')
             ->info('Set the ttl for cached items')
@@ -45,28 +47,29 @@ class Configuration implements ConfigurationInterface
             ->max(PHP_INT_MAX)
             ->defaultValue(300);
 
-        $cacheConfig->arrayNode('apcu')
+        $cacheConfigChildren->arrayNode('apcu')
             ->info('Use apcu for caching')
             ->canBeEnabled();
 
-        $fileCache = $cacheConfig->arrayNode('file')
+        $fileCache = $cacheConfigChildren->arrayNode('file')
             ->info('Use a simple file-based cache')
-            ->canBeEnabled()
-            ->children();
+            ->canBeEnabled();
 
-        $fileCache->scalarNode('dir')
+        $fileCacheChildren = $fileCache->children();
+
+        $fileCacheChildren->scalarNode('dir')
             ->info('Directory for cached files')
             ->defaultValue('%kernel.cache_dir%/%kernel.environment%');
 
-        $fileCache->scalarNode('name')
+        $fileCacheChildren->scalarNode('name')
             ->info('Key for the cached files')
             ->defaultValue('tus_php.server.cache');
 
-        $cacheConfig->arrayNode('native')
+        $cacheConfigChildren->arrayNode('native')
             ->info('Use the Symfony CacheInterface')
             ->canBeEnabled();
 
-        $redisCache = $cacheConfig->arrayNode('redis')
+        $redisCache = $cacheConfigChildren->arrayNode('redis')
             ->info('Use redis for caching')
             ->canBeEnabled()
             ->children();
