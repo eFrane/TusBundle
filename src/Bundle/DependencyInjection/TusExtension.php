@@ -134,6 +134,9 @@ class TusExtension extends Extension
         $definitions[ServerBridgeInterface::class] = $interface;
     }
 
+    /**
+     * @param array<array<string>> $cacheConfig
+     */
     private function configureCache(array $cacheConfig, int $ttl): Definition
     {
         /** @var Definition $cacheStore */
@@ -162,7 +165,7 @@ class TusExtension extends Extension
             ]);
         }
 
-        if (null === $cacheStore) {
+        if (!$cacheStore instanceof Definition) {
             throw new LogicException('No cache defined.');
         }
 
