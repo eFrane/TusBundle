@@ -47,9 +47,10 @@ class TusExtension extends Extension
     {
         $definitions = [];
 
+
         $this->registerController($definitions);
         $this->registerMiddleware($definitions);
-        $this->registerRouteLoader($configuration['api_path'], $definitions);
+        $this->registerRouteLoader($configuration['api_path'], $containerBuilder->getParameter('kernel.environment'), $definitions);
         $this->registerServerBridge($definitions);
         $this->registerTus($configuration, $definitions);
 
@@ -63,10 +64,12 @@ class TusExtension extends Extension
     /**
      * @param array<string,Definition> $definitions
      */
-    private function registerRouteLoader(string $apiPath, array &$definitions): void
+    private function registerRouteLoader(string $apiPath, string $environment, array &$definitions): void
     {
         $routeLoader = new Definition(RouteLoader::class);
         $routeLoader->setArgument('$apiPath', $apiPath);
+        $routeLoader->setArgument('$env', $environment);
+
         $routeLoader->addTag('routing.loader');
 
         $definitions[RouteLoader::class] = $routeLoader;
@@ -149,7 +152,7 @@ class TusExtension extends Extension
         if ($cacheConfig['file']['enabled']) {
             $cacheStore = new Definition(FileStore::class, [
                 '$cacheDir' => $cacheConfig['file']['dir'],
-                '$file'     => $cacheConfig['file']['name'],
+                '$cacheFile' => $cacheConfig['file']['name'],
             ]);
         }
 
