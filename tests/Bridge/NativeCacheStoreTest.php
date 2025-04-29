@@ -4,15 +4,23 @@ namespace EFrane\TusBundle\Tests\Bridge;
 
 use EFrane\TusBundle\Bridge\NativeCacheStore;
 use EFrane\TusBundle\Exception\NativeCacheStoreException;
+use PHPUnit\Framework\MockObject\Builder\InvocationMocker;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class NativeCacheStoreTest extends TestCase
 {
+    /**
+     * @var (object&\PHPUnit\Framework\MockObject\MockObject)|InvocationMocker|CacheInterface
+     */
     private $cacheMock;
+
+    /**
+     * @var NativeCacheStore
+     */
     private $nativeCacheStore;
 
-    public function testSetAndGetCacheItem()
+    public function testSetAndGetCacheItem(): void
     {
         $key = 'test_key';
         $value = 'test_value';
@@ -26,7 +34,7 @@ class NativeCacheStoreTest extends TestCase
         $this->assertEquals($value, $this->nativeCacheStore->get($key));
     }
 
-    public function testDeleteCacheItem()
+    public function testDeleteCacheItem(): void
     {
         $key = 'test_key';
 
@@ -38,13 +46,13 @@ class NativeCacheStoreTest extends TestCase
         $this->assertTrue($this->nativeCacheStore->delete($key));
     }
 
-    public function testGetMissingKeyThrowsException()
+    public function testGetMissingKeyThrowsException(): void
     {
         $this->expectException(NativeCacheStoreException::class);
         $this->nativeCacheStore->get('missing_key');
     }
 
-    public function testSetAndGetCacheItemWithPrefix()
+    public function testSetAndGetCacheItemWithPrefix(): void
     {
         $key = 'test_key';
         $value = 'test_value';
