@@ -10,8 +10,8 @@ reduce the friction and manual typing when using `tus-php` with Symfony.
 
 ## Versions Support
 
-The Bundle currently supports Symfony **4.4** and **5.x**, changes to this will be published here in and in the release
-notes.
+The Bundle currently supports Symfony **6.x**, changes to this will be published here 
+in and in the release notes.
 
 ## Installation and Quickstart
 
@@ -41,7 +41,7 @@ tus_bundle:
 
 to your `routes.yaml`.
 
-If you need to make adjustments to the [default configuration](#default-configuration), you can run
+You can run
 
 ```shell
 php bin/console config:dump TusBundle
@@ -56,14 +56,17 @@ at `config/packages/tus.yaml`.
 |------------|----------------------|-------------|
 | upload_dir | `%kernel.project_dir%/public/uploads` | Storage directory for finished uploads |
 | api_path   | `/_tus/upload` | Routing path to direct tus clients to |
-| cache_ttl  | 300 | Seconds until a cache entry gets invalidated |
+| cache_type | not selected | Caching provider to use |
 
 ## Caching
 
-You **MUST** configure a caching provider. It is recommended, to use the `native` cache which will use whatever cache
+You **MUST** configure a caching provider. It is recommended, to 
+use the `native` cache which will use whatever cache
 provider you configured in your Symfony application.
 
-Tus uses the cache to store
+**FYI**: Tus uses the cache to store information about the uploads. If you
+run into any problems with your upload mechanics, make sure to clear the
+configured tus cache when debugging them.
 
 ### Available Caching Providers
 
