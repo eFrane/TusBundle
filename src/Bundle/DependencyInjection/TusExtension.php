@@ -50,7 +50,11 @@ class TusExtension extends Extension
 
         $this->registerController($definitions);
         $this->registerMiddleware($definitions);
-        $this->registerRouteLoader($configuration['api_path'], $containerBuilder->getParameter('kernel.environment'), $definitions);
+        $this->registerRouteLoader(
+            $configuration['api_path'],
+            $containerBuilder->getParameter('kernel.environment'),
+            $definitions
+        );
         $this->registerServerBridge($definitions);
         $this->registerTus($configuration, $definitions);
 

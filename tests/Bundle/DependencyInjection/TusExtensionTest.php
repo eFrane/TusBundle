@@ -22,6 +22,8 @@ class TusExtensionTest extends AbstractExtensionTestCase
 
     public function testExtensionCanLoad(): void
     {
+        $this->container->setParameter('kernel.environment', 'test');
+
         $this->load([
             'cache_type' => [
                 'apcu' => [
