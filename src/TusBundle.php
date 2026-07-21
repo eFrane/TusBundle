@@ -1,18 +1,14 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @copyright 2020
- * @author Stefan "eFrane" Graupner <efrane@meanderingsoul.com>
- */
 
-namespace EFrane\TusBundle\Bundle;
+namespace EFrane\TusBundle;
 
-use EFrane\TusBundle\Bundle\DependencyInjection\Compiler\TusMiddlewareCompilerPass;
+use EFrane\TusBundle\DependencyInjection\Compiler\TusMiddlewareCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class TusBundle extends Bundle
+final class TusBundle extends Bundle
 {
     public function build(ContainerBuilder $container): void
     {

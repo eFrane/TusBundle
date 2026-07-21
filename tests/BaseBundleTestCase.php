@@ -1,8 +1,10 @@
 <?php
 
-namespace EFrane\TusBundle\Tests\Bundle;
+declare(strict_types=1);
 
-use EFrane\TusBundle\Bundle\TusBundle;
+namespace EFrane\TusBundle\Tests;
+
+use EFrane\TusBundle\TusBundle;
 use Nyholm\BundleTest\AppKernel;
 use Nyholm\BundleTest\BaseBundleTestCase as NyholmBaseBundleTestCase;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -17,16 +19,13 @@ abstract class BaseBundleTestCase extends NyholmBaseBundleTestCase
     }
 
     /**
-     * @param array<string,Definition> $additionalDefinitions Additional service definitions
-     * @return AppKernel
+     * @param array<string, Definition> $additionalDefinitions Additional service definitions
      */
     protected function bootWithAdditionalDefinitions(array $additionalDefinitions = []): AppKernel
     {
         $definitionLoaderPass = new class implements CompilerPassInterface {
-            /**
-             * @var array<string,Definition>
-             */
-            private $definitions = [];
+            /** @var array<string, Definition> */
+            private array $definitions = [];
 
             public function process(ContainerBuilder $container): void
             {
@@ -34,7 +33,7 @@ abstract class BaseBundleTestCase extends NyholmBaseBundleTestCase
             }
 
             /**
-             * @param array<string,Definition> $definitions
+             * @param array<string, Definition> $definitions
              */
             public function setDefinitions(array $definitions): void
             {
@@ -46,7 +45,7 @@ abstract class BaseBundleTestCase extends NyholmBaseBundleTestCase
 
         $kernel = $this->createKernel();
 
-        $kernel->addConfigFile(__DIR__.'/../Resources/config_native.yaml');
+        $kernel->addConfigFile(__DIR__.'/Resources/config_native.yaml');
 
         $kernel->addCompilerPasses([$definitionLoaderPass]);
         $kernel->boot();

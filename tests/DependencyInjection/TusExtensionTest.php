@@ -1,14 +1,10 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @copyright 2020
- * @author Stefan "eFrane" Graupner <efrane@meanderingsoul.com>
- */
 
-namespace EFrane\TusBundle\Tests\Bundle\DependencyInjection;
+namespace EFrane\TusBundle\Tests\DependencyInjection;
 
-use EFrane\TusBundle\Bundle\DependencyInjection\TusExtension;
+use EFrane\TusBundle\DependencyInjection\TusExtension;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 
 class TusExtensionTest extends AbstractExtensionTestCase

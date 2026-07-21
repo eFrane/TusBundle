@@ -1,23 +1,17 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @copyright 2020
- * @author Stefan "eFrane" Graupner <efrane@meanderingsoul.com>
- */
 
 namespace EFrane\TusBundle\Middleware;
 
 use TusPhp\Middleware\Middleware;
 
-class MiddlewareCollection
+final class MiddlewareCollection
 {
-    /** @var array<int,Middleware> */
-    private $middlewares;
+    /** @var array<int, Middleware> */
+    private array $middlewares;
 
     /**
-     * MiddlewareCollection constructor.
-     *
      * @param array<Middleware> $middlewares
      */
     public function __construct(array $middlewares)
@@ -26,7 +20,7 @@ class MiddlewareCollection
     }
 
     /**
-     * @return array<int,Middleware>
+     * @return array<int, Middleware>
      */
     public function all(): array
     {

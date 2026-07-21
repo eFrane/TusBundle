@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace EFrane\TusBundle\Bridge;
 
 use EFrane\TusBundle\Exception\NativeCacheStoreException;
@@ -11,44 +13,23 @@ use TusPhp\Cache\Cacheable;
 /**
  * TusPhp Cache Adapter to use the Symfony Cache directly.
  */
-class NativeCacheStore implements Cacheable
+final class NativeCacheStore implements Cacheable
 {
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
+    private string $prefix = '';
+    private int $ttl = 300;
 
-    /**
-     * @var array<string,callable>
-     */
-    private $keyCallables = [];
+    /** @var array<string, callable> */
+    private array $keyCallables = [];
 
-    /**
-     * @var string
-     */
-    private $prefix;
-
-    /**
-     * @var int
-     */
-    private $ttl;
-
-    /**
-     * @param CacheInterface $cache
-     */
-    public function __construct(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-        $this->ttl = 300;
+    public function __construct(
+        private CacheInterface $cache,
+    ) {
     }
 
     /**
-     * @param string $key
-     * @param bool   $withExpired
-     * @return mixed
      * @throws InvalidArgumentException
      */
-    public function get(string $key, bool $withExpired = false)
+    public function get(string $key, bool $withExpired = false): mixed
     {
         if (!array_key_exists($key, $this->keyCallables)) {
             throw NativeCacheStoreException::missingKey($key);
@@ -57,7 +38,7 @@ class NativeCacheStore implements Cacheable
         return $this->cache->get($this->prefix.$key, $this->keyCallables[$key]);
     }
 
-    public function set(string $key, $value)
+    public function set(string $key, mixed $value): void
     {
         $this->keyCallables[$key] = function (CacheItemInterface $item) use ($value) {
             $item->expiresAfter($this->ttl);
@@ -75,16 +56,15 @@ class NativeCacheStore implements Cacheable
     }
 
     /**
-     * @throws InvalidArgumentException
      * @param array<string> $keys
+     *
+     * @throws InvalidArgumentException
      */
     public function deleteAll(array $keys): bool
     {
         return array_reduce(
             $this->keys(),
-            function ($cond, $key) {
-                return $cond && $this->delete($key);
-            },
+            fn (bool $cond, string $key) => $cond && $this->delete($key),
             true
         );
     }

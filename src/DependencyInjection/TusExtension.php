@@ -1,12 +1,8 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @copyright 2020
- * @author Stefan "eFrane" Graupner <efrane@meanderingsoul.com>
- */
 
-namespace EFrane\TusBundle\Bundle\DependencyInjection;
+namespace EFrane\TusBundle\DependencyInjection;
 
 use EFrane\TusBundle\Bridge\NativeCacheStore;
 use EFrane\TusBundle\Bridge\ServerBridge;
@@ -14,7 +10,6 @@ use EFrane\TusBundle\Bridge\ServerBridgeInterface;
 use EFrane\TusBundle\Controller\TusController;
 use EFrane\TusBundle\Middleware\MiddlewareCollection;
 use EFrane\TusBundle\Routing\RouteLoader;
-use LogicException;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -25,7 +20,7 @@ use TusPhp\Cache\RedisStore;
 use TusPhp\Middleware\TusMiddleware;
 use TusPhp\Tus\Server;
 
-class TusExtension extends Extension
+final class TusExtension extends Extension
 {
     /**
      * @param array<string,mixed> $configs
@@ -33,9 +28,14 @@ class TusExtension extends Extension
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
-        $parsedConfiguration = $this->processConfiguration($configuration, $configs);
+        $parsedConfiguration = $this->processConfiguration(
+            $configuration,
+            $configs,
+        );
 
-        $container->addDefinitions($this->getTusServiceDefinitions($container, $parsedConfiguration));
+        $container->addDefinitions(
+            $this->getTusServiceDefinitions($container, $parsedConfiguration),
+        );
     }
 
     /**
@@ -43,24 +43,31 @@ class TusExtension extends Extension
      *
      * @return array<string, Definition>
      */
-    private function getTusServiceDefinitions(ContainerBuilder $containerBuilder, array $configuration): array
-    {
+    private function getTusServiceDefinitions(
+        ContainerBuilder $containerBuilder,
+        array $configuration,
+    ): array {
         $definitions = [];
-
 
         $this->registerController($definitions);
         $this->registerMiddleware($definitions);
-        $this->registerRouteLoader(
-            $configuration['api_path'],
-            $containerBuilder->getParameter('kernel.environment'),
-            $definitions
-        );
+
+        /** @var string $apiPath */
+        $apiPath = $configuration['api_path'];
+        /** @var string $environment */
+        $environment = $containerBuilder->getParameter('kernel.environment');
+
+        $this->registerRouteLoader($apiPath, $environment, $definitions);
         $this->registerServerBridge($definitions);
         $this->registerTus($configuration, $definitions);
 
-        $containerBuilder->registerForAutoconfiguration(TusMiddleware::class)->addTag('tus.middleware');
-        $containerBuilder->registerForAutoconfiguration(ServerBridgeInterface::class);
-        $containerBuilder->setAlias(ServerBridgeInterface::class, new Alias(ServerBridge::class));
+        $containerBuilder
+            ->registerForAutoconfiguration(TusMiddleware::class)
+            ->addTag('tus.middleware');
+        $containerBuilder->setAlias(
+            ServerBridgeInterface::class,
+            new Alias(ServerBridge::class),
+        );
 
         return $definitions;
     }
@@ -68,8 +75,11 @@ class TusExtension extends Extension
     /**
      * @param array<string,Definition> $definitions
      */
-    private function registerRouteLoader(string $apiPath, string $environment, array &$definitions): void
-    {
+    private function registerRouteLoader(
+        string $apiPath,
+        string $environment,
+        array &$definitions,
+    ): void {
         $routeLoader = new Definition(RouteLoader::class);
         $routeLoader->setArgument('$apiPath', $apiPath);
         $routeLoader->setArgument('$env', $environment);
@@ -83,9 +93,16 @@ class TusExtension extends Extension
      * @param array<string,mixed>      $configuration
      * @param array<string,Definition> $definitions
      */
-    private function registerTus(array $configuration, array &$definitions): void
-    {
-        $fileStore = $this->configureCache($configuration['cache_type'], $configuration['cache_ttl']);
+    private function registerTus(
+        array $configuration,
+        array &$definitions,
+    ): void {
+        /** @var array<array<string>> $cacheType */
+        $cacheType = $configuration['cache_type'];
+        /** @var int $cacheTtl */
+        $cacheTtl = $configuration['cache_ttl'];
+
+        $fileStore = $this->configureCache($cacheType, $cacheTtl);
 
         $definitions[$fileStore->getClass()] = $fileStore;
 
@@ -130,15 +147,9 @@ class TusExtension extends Extension
     {
         $serverBridge = new Definition(ServerBridge::class);
         $serverBridge->setLazy(true);
+        $serverBridge->setAutowired(true);
 
         $definitions[ServerBridge::class] = $serverBridge;
-
-        $interface = new Definition(ServerBridgeInterface::class);
-        $interface->setClass(ServerBridge::class);
-        $interface->setAutowired(true);
-        $interface->setLazy(true);
-
-        $definitions[ServerBridgeInterface::class] = $interface;
     }
 
     /**
@@ -146,40 +157,43 @@ class TusExtension extends Extension
      */
     private function configureCache(array $cacheConfig, int $ttl): Definition
     {
-        /** @var Definition $cacheStore */
-        $cacheStore = null;
-
-        if ($cacheConfig['apcu']['enabled']) {
-            $cacheStore = new Definition(ApcuStore::class);
-        }
-
-        if ($cacheConfig['file']['enabled']) {
-            $cacheStore = new Definition(FileStore::class, [
-                '$cacheDir' => $cacheConfig['file']['dir'],
-                '$cacheFile' => $cacheConfig['file']['name'],
-            ]);
-        }
-
-        if ($cacheConfig['native']['enabled']) {
-            $cacheStore = new Definition(NativeCacheStore::class);
-        }
-
-        if ($cacheConfig['redis']['enabled']) {
-            unset($cacheConfig['redis']['enabled']);
-
-            $cacheStore = new Definition(RedisStore::class, [
-                '$options' => $cacheConfig['redis']
-            ]);
-        }
-
-        if (!$cacheStore instanceof Definition) {
-            throw new LogicException('No cache defined.');
-        }
+        $cacheStore = $this->createCacheStore($cacheConfig);
 
         $cacheStore->addMethodCall('setTtl', [$ttl]);
         $cacheStore->setAutowired(true);
         $cacheStore->setLazy(true);
 
         return $cacheStore;
+    }
+
+    /**
+     * @param array<array<string>> $cacheConfig
+     */
+    private function createCacheStore(array $cacheConfig): Definition
+    {
+        if ($cacheConfig['apcu']['enabled']) {
+            return new Definition(ApcuStore::class);
+        }
+
+        if ($cacheConfig['file']['enabled']) {
+            return new Definition(FileStore::class, [
+                '$cacheDir'  => $cacheConfig['file']['dir'],
+                '$cacheFile' => $cacheConfig['file']['name'],
+            ]);
+        }
+
+        if ($cacheConfig['native']['enabled']) {
+            return new Definition(NativeCacheStore::class);
+        }
+
+        if ($cacheConfig['redis']['enabled']) {
+            unset($cacheConfig['redis']['enabled']);
+
+            return new Definition(RedisStore::class, [
+                '$options' => $cacheConfig['redis'],
+            ]);
+        }
+
+        throw new \LogicException('No cache defined.');
     }
 }

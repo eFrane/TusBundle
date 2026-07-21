@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace EFrane\TusBundle\Exception;
 
-use RuntimeException;
-
-class NativeCacheStoreException extends RuntimeException
+final class NativeCacheStoreException extends \RuntimeException
 {
     public static function missingKey(string $key): self
     {

@@ -1,18 +1,14 @@
 <?php
 
 declare(strict_types=1);
-/**
- * @copyright 2020
- * @author Stefan "eFrane" Graupner <efrane@meanderingsoul.com>
- */
 
-namespace EFrane\TusBundle\Bundle\DependencyInjection;
+namespace EFrane\TusBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -44,7 +40,7 @@ class Configuration implements ConfigurationInterface
         $children->integerNode('cache_ttl')
             ->info('Set the ttl for cached items')
             ->min(0)
-            ->max(PHP_INT_MAX)
+            ->max(\PHP_INT_MAX)
             ->defaultValue(300);
 
         $cacheConfigChildren->arrayNode('apcu')
@@ -93,7 +89,7 @@ class Configuration implements ConfigurationInterface
         $children->integerNode('max_upload_size')
             ->info('Maximum upload size')
             ->min(0)
-            ->max(PHP_INT_MAX)
+            ->max(\PHP_INT_MAX)
             ->defaultValue(0);
 
         $children->scalarNode('upload_dir')

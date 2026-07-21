@@ -10,7 +10,7 @@ reduce the friction and manual typing when using `tus-php` with Symfony.
 
 ## Versions Support
 
-The Bundle currently supports Symfony **6.x**, changes to this will be published here 
+The Bundle currently supports Symfony **6.4+ / 7.x / 8.x**, changes to this will be published here 
 in and in the release notes.
 
 ## Installation and Quickstart
@@ -26,7 +26,7 @@ Enable the bundle in your `bundles.php`:
 ```php
 return [
     // ...
-    EFrane\TusBundle\Bundle\TusBundle::class => ['all' => true],
+    EFrane\TusBundle\TusBundle::class => ['all' => true],
     // ...
 ];
 ```
