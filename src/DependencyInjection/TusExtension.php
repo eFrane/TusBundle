@@ -104,7 +104,10 @@ final class TusExtension extends Extension
 
         $fileStore = $this->configureCache($cacheType, $cacheTtl);
 
-        $definitions[$fileStore->getClass()] = $fileStore;
+        $fileStoreClass = $fileStore->getClass();
+        if (null !== $fileStoreClass) {
+            $definitions[$fileStoreClass] = $fileStore;
+        }
 
         $server = new Definition(Server::class, [
             '$cacheAdapter' => $fileStore,
