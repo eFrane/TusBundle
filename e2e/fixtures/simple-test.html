@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TUSBundle E2E Test</title>
+</head>
+<body>
+    <div id="result"></div>
+    <script>
+        // Test the TUS endpoint directly
+        const endpoint = window.location.origin + '/_tus/upload';
+
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Tus-Resumable': '1.0.0',
+                'Upload-Metadata': 'filename test.txt,filetype text/plain',
+                'Upload-Length': '5'
+            }
+        })
+        .then(response => response.text())
+        .then(text => {
+            document.getElementById('result').textContent = 'TUS endpoint responded: ' + text;
+            window.tusResponse = text;
+        })
+        .catch(error => {
+            document.getElementById('result').textContent = 'Error: ' + error.message;
+            window.tusError = error.message;
+        });
+
+        window.endpoint = endpoint;
+        window.testReady = true;
+    </script>
+</body>
+</html>

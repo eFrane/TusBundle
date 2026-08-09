@@ -1,0 +1,19 @@
+{
+  "name": "tus-bundle",
+  "description": "A Symfony Bundle for ankitpokhrel/tus-php",
+  "type": "module",
+  "scripts": {
+    "e2e:install": "playwright install",
+    "e2e:test": "playwright test",
+    "e2e:test:ui": "playwright test --ui",
+    "e2e:test:headed": "playwright test --headed",
+    "e2e:test:debug": "playwright test --debug"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "uppy": "^3.10.0",
+    "@uppy/core": "^3.10.0",
+    "@uppy/tus": "^3.10.0",
+    "@uppy/xhr-upload": "^3.10.0"
+  }
+}
