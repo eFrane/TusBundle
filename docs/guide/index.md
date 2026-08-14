@@ -101,7 +101,8 @@ Additional available options for the `file` cache type:
 
 **`native`**
 
-::: tip If you're unsure about the implications, use this provider.
+::: tip
+If you're unsure about the implications, use this provider.
 :::
 
 To configure it, you need to set:

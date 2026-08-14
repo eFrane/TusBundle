@@ -4,7 +4,12 @@
   "description": "Docs for the Symfony Tus Bundle",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
   "dependencies": {
-    "vuepress": "^1.7.1"
+    "vitepress": "^1.6.4"
   }
 }
